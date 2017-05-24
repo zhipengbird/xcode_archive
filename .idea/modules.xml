@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/../Xcodetools/.idea/Xcodetools.iml" filepath="$PROJECT_DIR$/../Xcodetools/.idea/Xcodetools.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/xcode_archive.iml" filepath="$PROJECT_DIR$/.idea/xcode_archive.iml" />
+    </modules>
+  </component>
+</project>
