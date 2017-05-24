@@ -198,8 +198,7 @@ def export_ipa(rootpath, method):
     archivepath, project_name = auto_recogonize_archive_file (rootpath)
 
     if archivepath is None:
-        print
-        "Not found *.xcarchive file "
+        print("Not found *.xcarchive file ")
         sys.exit (1)
     plistpath = os.path.join (base_dir, method + '.plist')
     produce_plistcontent (project_name, plistpath=plistpath, method=method)
