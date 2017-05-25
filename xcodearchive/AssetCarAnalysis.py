@@ -36,7 +36,7 @@ class AssetImageAnalysis:
         return None
 
     def asset_property(self, carpath):
-        jsonpath = os.path.join (self.resultpath, 'car.json')
+        jsonpath = os.path.join (self.resultpath, 'assetcar.json')
         xrun_cmd = "xcrun --sdk iphoneos assetutil --info %s > %s " % (carpath, jsonpath)
         os.system (xrun_cmd)
         self.parse_json (jsonpath)
@@ -60,6 +60,7 @@ class AssetImageAnalysis:
             print ("count: %s" % (len (result)))
             print (result)
         else:
+            print ("OK!! No problem")
             result.append (u'OK!! No problem')
 
         # 序列化成json字符，写入文件
