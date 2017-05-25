@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/../Xcodetools/.idea/Xcodetools.iml" filepath="$PROJECT_DIR$/../Xcodetools/.idea/Xcodetools.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/xcode_archive.iml" filepath="$PROJECT_DIR$/.idea/xcode_archive.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/xcodearchive.iml" filepath="$PROJECT_DIR$/.idea/xcodearchive.iml" />
     </modules>
   </component>
 </project>

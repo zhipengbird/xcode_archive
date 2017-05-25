@@ -164,7 +164,11 @@ def export_dsyms(archive_path, scheme, export_path):
     :return: 
     """
     dysm_path = os.path.join (archive_path, 'DSYMs', '{}.app.DSYM'.format (scheme))
-    shutil.copy2 (dysm_path, export_path)
+    try:
+        shutil.move (dysm_path, export_path)
+    except Exception as e:
+        print e.__str__()
+
 
 
 def build_project():
@@ -221,7 +225,7 @@ def archive_project():
         # 输出命令
         print (archive_cmd)
         # 执行命令
-        print(os.system (archive_cmd))
+        print (os.system (archive_cmd))
         # 导出ipa
         export_ipa (base_dir, method)
         ipa_list = auto_recogonize_ipa_file (base_dir)
@@ -234,7 +238,7 @@ def archive_project():
         # 输出命令
         print (archive_cmd)
         # 执行命令
-        print(os.system (archive_cmd))
+        print (os.system (archive_cmd))
         # 导出ipa
         export_ipa (base_dir, method)
 
@@ -281,7 +285,7 @@ def export_ipa(rootpath, method):
         archivepath, base_dir, plistpath)
     print (export_cmd)
     print ('processing export  operation... ')
-    print(os.system (export_cmd))
+    print (os.system (export_cmd))
     export_dsyms (archivepath, project_name, base_dir)
 
 
@@ -292,14 +296,13 @@ def upload_ipa_appstore(ipa_path):
     :return: 
     """
 
-
     # username = raw_input('please enter the APPid:').strip()
     # password = raw_input('Please enter the password:').strip()
     validate_cmd = '%s --validate-app -f %s -u %s -p %s --output-format xml' % (
-    altool, ipa_path, appid_username, appid_password)
+        altool, ipa_path, appid_username, appid_password)
 
     upload_cmd = '%s --upload-app -f %s -u %s -p %s --output-format xml' % (
-    altool, ipa_path, appid_username, appid_password)
+        altool, ipa_path, appid_username, appid_password)
 
     print (os.system (validate_cmd))
     print (os.system (upload_cmd))
