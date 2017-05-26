@@ -18,7 +18,7 @@ def fread(fname):
 
 setup (
     name='xcodearchive',
-    version='1.3',
+    version='1.3.3',
     description='A quick xcode build tools',
     keywords='xcode build',
     url='https://github.com/zhipengbird/xcode_archive',

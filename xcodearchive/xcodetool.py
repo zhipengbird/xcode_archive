@@ -39,9 +39,6 @@ appid_password = None
 root_dir = os.path.realpath ('.')
 base_dir = os.path.join (root_dir, 'xcodebuild')
 
-if os.path.exists (base_dir):
-    shutil.rmtree (base_dir)
-
 if not os.path.exists (base_dir):
     os.makedirs (base_dir)
 
@@ -137,8 +134,6 @@ def produce_plistcontent(projectname, plistpath, method):
             <dict>
 				<key>method</key>
 				<string>%s</string>
-				<key>teamID</key>
-				<string>7NQ2BR7A9Y</string>
 				<key>title</key>
 				<string>%s</string>
 				<key>kind</key>
@@ -167,8 +162,7 @@ def export_dsyms(archive_path, scheme, export_path):
     try:
         shutil.move (dysm_path, export_path)
     except Exception as e:
-        print e.__str__()
-
+        print e.__str__ ( )
 
 
 def build_project():
@@ -259,7 +253,7 @@ def check_upload_ipa():
     寻问用户是否需要上传app_store
     :return: 导问结果
     """
-    like = raw_input ('Do you want to upload to Appstore after archive completed?(y/n)').strip ( ).lower ( )
+    like = raw_input ('Do you want to upload to Appstore?(y/n)').strip ( ).lower ( )
     if like == 'y':
         enter_username_password ( )
         return True
@@ -304,6 +298,8 @@ def upload_ipa_appstore(ipa_path):
     upload_cmd = '%s --upload-app -f %s -u %s -p %s --output-format xml' % (
         altool, ipa_path, appid_username, appid_password)
 
+    print (validate_cmd)
+    print (upload_cmd)
     print (os.system (validate_cmd))
     print (os.system (upload_cmd))
 
@@ -333,13 +329,16 @@ def main():
 
     else:
         # 上传ipa
+
         security_cmd = "security unlock-keychain"
         os.system (security_cmd)
         ipa_list = auto_recogonize_ipa_file (base_dir)
         if len (ipa_list) > 0:
             ipa, _ = pick (ipa_list, "current ipa list", '=>')
             ipa_path = os.path.join (base_dir, ipa)
-            upload_ipa_appstore (ipa_path)
+            print (ipa_path)
+            if check_upload_ipa ( ):
+                upload_ipa_appstore (ipa_path)
         else:
             print ("Not any ipa files !")
 
