@@ -158,6 +158,7 @@ def export_dsyms(archive_path, scheme, export_path):
     :param export_path: 导出路径
     :return: 
     """
+    print ("exported dsym file ....")
     dysm_path = os.path.join (archive_path, 'DSYMs', '{}.app.DSYM'.format (scheme))
     try:
         shutil.move (dysm_path, export_path)
@@ -182,8 +183,13 @@ def build_project():
             os.path.join (root_dir, project_file), result[0], result[2])
     print (build_project_cmd)
     print ('performing compilation operation...')
-    status = os.system (build_project_cmd)
-    print (status)
+    if os.system (build_project_cmd) ==0:
+        print ("Congratulations! Your project build successed!")
+    else:
+        print ("Very sorry!  Your project build failed, please try again")
+
+
+
 
 
 def clean_build():
@@ -212,6 +218,7 @@ def archive_project():
         archive_cmd = 'xcodebuild archive -archivePath %s -project %s -scheme %s -configuration %s  ' % (
             os.path.join (base_dir, result[3]), os.path.join (root_dir, work_space_file), result[1], result[2])
 
+    # 需要自动上传ipa
     if check_upload_ipa ( ):
 
         # 选择导出方式
@@ -219,22 +226,30 @@ def archive_project():
         # 输出命令
         print (archive_cmd)
         # 执行命令
-        print (os.system (archive_cmd))
-        # 导出ipa
-        export_ipa (base_dir, method)
-        ipa_list = auto_recogonize_ipa_file (base_dir)
-        if len (ipa_list) > 0:
-            ipa_path = os.path.join (base_dir, ipa_list[0])
-            upload_ipa_appstore (ipa_path)
+        if os.system (archive_cmd) ==0 :
+            print ("Congratulations! Your project archive  successed!")
+
+            # 导出ipa
+            export_ipa (base_dir, method)
+            ipa_list = auto_recogonize_ipa_file (base_dir)
+            if len (ipa_list) > 0:
+                ipa_path = os.path.join (base_dir, ipa_list[0])
+                upload_ipa_appstore (ipa_path)
+        else:
+            print ("Very sorry!  Your project archive failed, please try again")
     else:
+        #不需要上传ipa
         # 选择导出方式
         method, index = pick (export_method, export_title, '=>')
         # 输出命令
         print (archive_cmd)
         # 执行命令
-        print (os.system (archive_cmd))
-        # 导出ipa
-        export_ipa (base_dir, method)
+        if os.system (archive_cmd) == 0:
+            print ("Congratulations! Your project archive  successed!")
+            # 导出ipa
+            export_ipa (base_dir, method)
+        else:
+            print ("Very sorry!  Your project archive failed, please try again")
 
 
 def enter_username_password():
@@ -274,13 +289,21 @@ def export_ipa(rootpath, method):
         print ("Not found *.xcarchive file ")
         sys.exit (1)
     plistpath = os.path.join (base_dir, method + '.plist')
+    #  生成相应的导出包plist
     produce_plistcontent (project_name, plistpath=plistpath, method=method)
+    # 导出ipa
     export_cmd = 'xcodebuild  -exportArchive -archivePath %s -exportPath %s -exportOptionsPlist %s  ' % (
         archivepath, base_dir, plistpath)
+
     print (export_cmd)
     print ('processing export  operation... ')
-    print (os.system (export_cmd))
-    export_dsyms (archivepath, project_name, base_dir)
+    if os.system (export_cmd) == 0:
+        print ("Congratulations! Your ipa export  successed!")
+        export_dsyms (archivepath, project_name, base_dir)
+    else:
+        print ("Very sorry!  Your ipa  export failed, please try again")
+
+
 
 
 def upload_ipa_appstore(ipa_path):
@@ -289,20 +312,22 @@ def upload_ipa_appstore(ipa_path):
     :param ipa_path: 
     :return: 
     """
-
-    # username = raw_input('please enter the APPid:').strip()
-    # password = raw_input('Please enter the password:').strip()
+    # 校验ipa包是否符答苹果规范
     validate_cmd = '%s --validate-app -f %s -u %s -p %s --output-format xml' % (
         altool, ipa_path, appid_username, appid_password)
-
+    # 上传ipa包到苹果商店
     upload_cmd = '%s --upload-app -f %s -u %s -p %s --output-format xml' % (
         altool, ipa_path, appid_username, appid_password)
 
     print (validate_cmd)
     print (upload_cmd)
-    print (os.system (validate_cmd))
-    print (os.system (upload_cmd))
-
+    if os.system (validate_cmd)==0:
+        if os.system (upload_cmd) == 0:
+            print ("Congratulations! Your ipa package upload successed!")
+        else:
+            print ("Very sorry! Your ipa packeage upload failed, please try again")
+    else:
+        print ("Very sorry!  Your ipa packeage validate failed, please try again")
 
 def main():
     method, index = pick (enter_method, enter_title, indicator='=>')
