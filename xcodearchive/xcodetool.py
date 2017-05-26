@@ -17,23 +17,23 @@ from  pick import pick
 
 __default_path_keychain = '~/Library/Keychains/login.keychain'
 
-altool = '/Applications/Xcode.app/Contents/Applications/Application\ Loader.app/Contents/Frameworks/ITunesSoftwareService.framework/Versions/A/Support/altool'
-# altool 路径
+__altool = '/Applications/Xcode.app/Contents/Applications/Application\ Loader.app/Contents/Frameworks/ITunesSoftwareService.framework/Versions/A/Support/__altool'
+# __altool 路径
 
 # 程序入口方式
-enter_title = 'Please select a way to work!'
-enter_method = ['build project', 'archive project', 'export ipa', 'clean build', 'Check Asset.car', 'upload ipa']
+__enter_title = 'Please select a way to work!'
+__enter_method = ['build project', 'archive project', 'export ipa', 'clean build', 'Check Asset.car', 'upload ipa']
 
 # 导出方式
-export_title = 'Please choose the way to export!'
-export_method = ['app-store', 'enterprise', 'ad-hoc', 'development']
+__export_title = 'Please choose the way to export!'
+__export_method = ['app-store', 'enterprise', 'ad-hoc', 'development']
 
-export_format_title = "Please choose the format to export!"
-export_format = ['IPA', 'PKG', 'APP']
+__export_format_title = "Please choose the format to export!"
+__export_format = ['IPA', 'PKG', 'APP']
 
 # 苹果账号
-appid_username = None
-appid_password = None
+__appid_username = None
+__appid_password = None
 
 # 获取根目录文件夹
 root_dir = os.path.realpath ('.')
@@ -42,8 +42,8 @@ base_dir = os.path.join (root_dir, 'xcodebuild')
 if not os.path.exists (base_dir):
     os.makedirs (base_dir)
 
-work_space_file = None
-project_file = None
+__work_space_file = None
+__project_file = None
 
 
 def auto_recogonize_project():
@@ -54,11 +54,11 @@ def auto_recogonize_project():
     dirlist = os.listdir (root_dir)
     for file in dirlist:
         if os.path.splitext (file)[1] == '.xcworkspace':
-            global work_space_file
-            work_space_file = file
+            global __work_space_file
+            __work_space_file = file
         elif os.path.splitext (file)[1] == '.xcodeproj' and os.path.splitext (file)[0] != 'Pods':
-            global project_file
-            project_file = file
+            global __project_file
+            __project_file = file
         else:
             continue
 
@@ -158,10 +158,11 @@ def export_dsyms(archive_path, scheme, export_path):
     :param export_path: 导出路径
     :return: 
     """
-    print ("exported dsym file ....")
+    print ("export dsym file ....")
     dysm_path = os.path.join (archive_path, 'DSYMs', '{}.app.DSYM'.format (scheme))
     try:
         shutil.move (dysm_path, export_path)
+        print ("export dsym file successed")
     except Exception as e:
         print e.__str__ ( )
 
@@ -173,14 +174,14 @@ def build_project():
     """
     auto_recogonize_project ( )
     result = get_project_basic_info ( )
-    if work_space_file:
+    if __work_space_file:
         # 编译工作空间
         build_project_cmd = 'xcodebuild -workspace %s  -scheme %s  -configuration  %s build' % (
-            os.path.join (root_dir, work_space_file), result[1], result[2])
+            os.path.join (root_dir, __work_space_file), result[1], result[2])
     else:
         # 编译工程文件
         build_project_cmd = 'xcodebuild -project %s  -target %s -configuration %s build' % (
-            os.path.join (root_dir, project_file), result[0], result[2])
+            os.path.join (root_dir, __project_file), result[0], result[2])
     print (build_project_cmd)
     print ('performing compilation operation...')
     if os.system (build_project_cmd) ==0:
@@ -188,11 +189,11 @@ def build_project():
     else:
         print ("Very sorry!  Your project build failed, please try again")
 
-
-
-
-
 def clean_build():
+    """
+    清理编译文件
+    :return: 
+    """
     clean_cmd = 'xcodebuild clean'
     print (clean_cmd)
     os.system (clean_cmd)
@@ -207,22 +208,22 @@ def archive_project():
     """
     auto_recogonize_project ( )
     result = get_project_basic_info ( )
-    if work_space_file is None and project_file is None:
+    if __work_space_file is None and __project_file is None:
         print ("Not found any file (.xcworkspace or *.xcodeproj),please check it")
         sys.exit (1)
 
-    if work_space_file:
+    if __work_space_file:
         archive_cmd = 'xcodebuild archive -archivePath %s -workspace %s -scheme %s -configuration %s ' % (
-            os.path.join (base_dir, result[3]), os.path.join (root_dir, work_space_file), result[1], result[2])
+            os.path.join (base_dir, result[3]), os.path.join (root_dir, __work_space_file), result[1], result[2])
     else:
         archive_cmd = 'xcodebuild archive -archivePath %s -project %s -scheme %s -configuration %s  ' % (
-            os.path.join (base_dir, result[3]), os.path.join (root_dir, work_space_file), result[1], result[2])
+            os.path.join (base_dir, result[3]), os.path.join (root_dir, __work_space_file), result[1], result[2])
 
     # 需要自动上传ipa
     if check_upload_ipa ( ):
 
         # 选择导出方式
-        method, index = pick (export_method, export_title, '=>')
+        method, index = pick (__export_method, __export_title, '=>')
         # 输出命令
         print (archive_cmd)
         # 执行命令
@@ -240,7 +241,7 @@ def archive_project():
     else:
         #不需要上传ipa
         # 选择导出方式
-        method, index = pick (export_method, export_title, '=>')
+        method, index = pick (__export_method, __export_title, '=>')
         # 输出命令
         print (archive_cmd)
         # 执行命令
@@ -258,9 +259,9 @@ def enter_username_password():
     :return: 
     """
     # 要求用户输入账号和密码：
-    global appid_password, appid_username
-    appid_username = raw_input ('Please input your accout of appid:').strip ( )
-    appid_password = raw_input ('Please input your password of appid:').strip ( )
+    global __appid_password, __appid_username
+    __appid_username = raw_input ('Please input your accout of appid:').strip ( )
+    __appid_password = raw_input ('Please input your password of appid:').strip ( )
 
 
 def check_upload_ipa():
@@ -304,8 +305,6 @@ def export_ipa(rootpath, method):
         print ("Very sorry!  Your ipa  export failed, please try again")
 
 
-
-
 def upload_ipa_appstore(ipa_path):
     """
     上传ipa到appstore
@@ -314,10 +313,10 @@ def upload_ipa_appstore(ipa_path):
     """
     # 校验ipa包是否符答苹果规范
     validate_cmd = '%s --validate-app -f %s -u %s -p %s --output-format xml' % (
-        altool, ipa_path, appid_username, appid_password)
+        __altool, ipa_path, __appid_username, __appid_password)
     # 上传ipa包到苹果商店
     upload_cmd = '%s --upload-app -f %s -u %s -p %s --output-format xml' % (
-        altool, ipa_path, appid_username, appid_password)
+        __altool, ipa_path, __appid_username, __appid_password)
 
     print (validate_cmd)
     print (upload_cmd)
@@ -330,7 +329,7 @@ def upload_ipa_appstore(ipa_path):
         print ("Very sorry!  Your ipa packeage validate failed, please try again")
 
 def main():
-    method, index = pick (enter_method, enter_title, indicator='=>')
+    method, index = pick (__enter_method, __enter_title, indicator='=>')
     if index == 0:
         # 编译工程文件
         build_project ( )
@@ -341,7 +340,7 @@ def main():
 
     elif index == 2:
         # 对已有的archive文件进行导出ipa
-        method, index = pick (export_method, export_title, '=>')
+        method, index = pick (__export_method, __export_title, '=>')
         export_ipa (root_dir, method)
 
     elif index == 3:

@@ -57,8 +57,10 @@ class AssetImageAnalysis:
 
         # 若有不符合规则的图片，则它们写入json文件
         if len (result) > 0:
-            print ("count: %s" % (len (result)))
-            print (result)
+            print ("warning ,these picture code are illegal,please checked !!")
+            for item in result:
+                print ('Name :'+ item['Name'] + "Ecodeing :"+item["Encoding"])
+            print ("all counts : %s" % (len (result)))
         else:
             print ("OK!! No problem")
             result.append (u'OK!! No problem')
