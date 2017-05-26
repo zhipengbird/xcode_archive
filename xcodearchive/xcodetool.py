@@ -311,6 +311,10 @@ def upload_ipa_appstore(ipa_path):
     :param ipa_path: 
     :return: 
     """
+    # 检查用户名或密码不为空
+    if len(__appid_username) == 0 or len(__appid_password)==0 :
+        print  ("username or password is empty,please check it")
+        sys.exit(1)
     # 校验ipa包是否符答苹果规范
     validate_cmd = '%s --validate-app -f %s -u %s -p %s --output-format xml' % (
         __altool, ipa_path, __appid_username, __appid_password)
