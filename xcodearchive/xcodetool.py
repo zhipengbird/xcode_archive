@@ -37,14 +37,17 @@ __appid_password = None
 
 # 获取根目录文件夹
 root_dir = os.path.realpath ('.')
-base_dir = os.path.join (root_dir, 'xcodebuild')
 
-if not os.path.exists (base_dir):
-    os.makedirs (base_dir)
+base_dir = root_dir
 
 __work_space_file = None
 __project_file = None
 
+def auto_create_product_dir():
+    global  base_dir
+    base_dir = os.path.join (root_dir, 'xcodebuild')
+    if not os.path.exists (base_dir):
+        os.makedirs (base_dir)
 
 def auto_recogonize_project():
     '''
@@ -160,11 +163,12 @@ def export_dsyms(archive_path, scheme, export_path):
     """
     print ("export dsym file ....")
     dysm_path = os.path.join (archive_path, 'DSYMs', '{}.app.DSYM'.format (scheme))
-    try:
-        shutil.move (dysm_path, export_path)
-        print ("export dsym file successed")
-    except Exception as e:
-        print e.__str__ ( )
+    if os.path.exists(dysm_path):
+        try:
+            shutil.move (dysm_path, export_path)
+            print ("export dsym file successed")
+        except Exception as e:
+            print e.__str__ ( )
 
 
 def build_project():
@@ -339,6 +343,7 @@ def main():
         build_project ( )
 
     elif index == 1:
+        auto_create_product_dir()
         archive_project ( )
         # 对工程进行打包
 

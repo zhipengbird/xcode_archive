@@ -1,4 +1,4 @@
-# xcodearchive
+py# xcodearchive
 
   一个方便快捷的xcode编译打包工具脚本 ，一个命令行，搞定你的所有需求。
 

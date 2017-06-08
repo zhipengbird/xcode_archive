@@ -18,9 +18,9 @@ def fread(fname):
 
 setup (
     name='xcodearchive',
-    version='1.3.3',
-    description='A quick xcode build tools',
-    keywords='xcode build',
+    version='1.4.0',
+    description='A  xcode build and archive tools',
+    keywords='xcode, build, archive ',
     url='https://github.com/zhipengbird/xcode_archive',
     author='yuanpinghua',
     author_email='yuanpinghua@yeah.net',
@@ -34,13 +34,13 @@ setup (
         'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3.3',
-        'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: 3.5'
     ],
     entry_points={
         'console_scripts': [
             'xcodearchive = xcodearchive.xcodetool:main'
         ]
     },
+    long_description=open ("README.md").read ( )
+
     # install_requires =['shutil'],
 )
