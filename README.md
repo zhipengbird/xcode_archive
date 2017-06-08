@@ -4,7 +4,7 @@ py# xcodearchive
 
 
  在使用中遇到什么问题，或有什么新的需求，请邮件联系 yuanpinghua@yeah.net
-
+>PS:运行环境为python 2.7  在高版本上可以会出现问题
 
 # 主要功能：
 1. ✔ 打包项目(.xcodeproj, .xcworkspace), 生成.xcarchive

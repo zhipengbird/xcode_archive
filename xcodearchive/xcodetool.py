@@ -11,6 +11,7 @@ import json
 import os
 import shutil
 import sys
+import datetime
 
 from AssetCarAnalysis import AssetImageAnalysis
 from  pick import pick
@@ -168,7 +169,7 @@ def export_dsyms(archive_path, scheme, export_path):
             shutil.move (dysm_path, export_path)
             print ("export dsym file successed")
         except Exception as e:
-            print e.__str__ ( )
+            pass
 
 
 def build_project():
@@ -298,7 +299,7 @@ def export_ipa(rootpath, method):
     produce_plistcontent (project_name, plistpath=plistpath, method=method)
     # 导出ipa
     export_cmd = 'xcodebuild  -exportArchive -archivePath %s -exportPath %s -exportOptionsPlist %s  ' % (
-        archivepath, base_dir, plistpath)
+        archivepath, os.path.join(base_dir,project_name+'-'+method+'-'+datetime.datetime.now().strftime('%d_%H_%M')), plistpath)
 
     print (export_cmd)
     print ('processing export  operation... ')
@@ -337,6 +338,7 @@ def upload_ipa_appstore(ipa_path):
         print ("Very sorry!  Your ipa packeage validate failed, please try again")
 
 def main():
+    # pass
     method, index = pick (__enter_method, __enter_title, indicator='=>')
     if index == 0:
         # 编译工程文件

@@ -18,7 +18,7 @@ def fread(fname):
 
 setup (
     name='xcodearchive',
-    version='1.4.0',
+    version='1.4.4',
     description='A  xcode build and archive tools',
     keywords='xcode, build, archive ',
     url='https://github.com/zhipengbird/xcode_archive',
@@ -40,7 +40,7 @@ setup (
             'xcodearchive = xcodearchive.xcodetool:main'
         ]
     },
-    long_description=open ("README.md").read ( )
+    # long_description=fread("README.md")
 
     # install_requires =['shutil'],
 )
