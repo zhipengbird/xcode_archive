@@ -38,6 +38,8 @@ __appid_password = None
 
 # 获取根目录文件夹
 root_dir = os.path.realpath ('.')
+# root_dir = '/Users/yuanpinghua/Downloads/block'
+
 
 base_dir = root_dir
 
@@ -222,7 +224,7 @@ def archive_project():
             os.path.join (base_dir, result[3]), os.path.join (root_dir, __work_space_file), result[1], result[2])
     else:
         archive_cmd = 'xcodebuild archive -archivePath %s -project %s -scheme %s -configuration %s  ' % (
-            os.path.join (base_dir, result[3]), os.path.join (root_dir, __work_space_file), result[1], result[2])
+            os.path.join (base_dir, result[3]), os.path.join (root_dir, __project_file), result[1], result[2])
 
     # 需要自动上传ipa
     if check_upload_ipa ( ):
