@@ -96,5 +96,7 @@ py# xcodearchive
 
 
 
+    ps:  有人在使用pip 安装过程中出现错误，提示找不到pip，是因为机子上没有安装pip
+    请参考 [pip安装教程](http://yuanph.org/2017/06/27/pip%E5%AE%89%E8%A3%85%E4%BD%BF%E7%94%A8%E8%AF%A6%E8%A7%A3/)
 
 
