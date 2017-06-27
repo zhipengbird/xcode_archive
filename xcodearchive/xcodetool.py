@@ -13,8 +13,12 @@ import shutil
 import sys
 import datetime
 
+reload(sys)
+
+
 from AssetCarAnalysis import AssetImageAnalysis
 from  pick import pick
+
 
 __default_path_keychain = '~/Library/Keychains/login.keychain'
 
@@ -37,7 +41,7 @@ __appid_username = None
 __appid_password = None
 
 # 获取根目录文件夹
-root_dir = os.path.realpath ('.')
+root_dir = os.path.realpath ('.').decode('utf-8')
 # root_dir = '/Users/yuanpinghua/Downloads/block'
 
 
@@ -180,6 +184,11 @@ def build_project():
     :return: 
     """
     auto_recogonize_project ( )
+
+    if __work_space_file is None and __project_file is None:
+        print ("Not found any file (.xcworkspace or *.xcodeproj),please check it")
+        sys.exit (1)
+
     result = get_project_basic_info ( )
     if __work_space_file:
         # 编译工作空间
@@ -189,6 +198,8 @@ def build_project():
         # 编译工程文件
         build_project_cmd = 'xcodebuild -project %s  -target %s -configuration %s build' % (
             os.path.join (root_dir, __project_file), result[0], result[2])
+
+    build_project_cmd = build_project_cmd.encode('utf-8')
     print (build_project_cmd)
     print ('performing compilation operation...')
     if os.system (build_project_cmd) ==0:
@@ -214,11 +225,13 @@ def archive_project():
     :return: 
     """
     auto_recogonize_project ( )
-    result = get_project_basic_info ( )
+
+
     if __work_space_file is None and __project_file is None:
         print ("Not found any file (.xcworkspace or *.xcodeproj),please check it")
         sys.exit (1)
 
+    result = get_project_basic_info ( )
     if __work_space_file:
         archive_cmd = 'xcodebuild archive -archivePath %s -workspace %s -scheme %s -configuration %s ' % (
             os.path.join (base_dir, result[3]), os.path.join (root_dir, __work_space_file), result[1], result[2])
@@ -226,6 +239,7 @@ def archive_project():
         archive_cmd = 'xcodebuild archive -archivePath %s -project %s -scheme %s -configuration %s  ' % (
             os.path.join (base_dir, result[3]), os.path.join (root_dir, __project_file), result[1], result[2])
 
+    archive_cmd = archive_cmd.encode('utf-8')
     # 需要自动上传ipa
     if check_upload_ipa ( ):
 
@@ -302,7 +316,7 @@ def export_ipa(rootpath, method):
     # 导出ipa
     export_cmd = 'xcodebuild  -exportArchive -archivePath %s -exportPath %s -exportOptionsPlist %s  ' % (
         archivepath, os.path.join(base_dir,project_name+'-'+method+'-'+datetime.datetime.now().strftime('%d_%H_%M')), plistpath)
-
+    export_cmd= export_cmd.encode('utf-8')
     print (export_cmd)
     print ('processing export  operation... ')
     if os.system (export_cmd) == 0:
@@ -329,6 +343,8 @@ def upload_ipa_appstore(ipa_path):
     upload_cmd = '%s --upload-app -f %s -u %s -p %s --output-format xml' % (
         __altool, ipa_path, __appid_username, __appid_password)
 
+    validate_cmd = validate_cmd.decode('utf-8')
+    upload_cmd = upload_cmd.decode('utf-8')
     print (validate_cmd)
     print (upload_cmd)
     if os.system (validate_cmd)==0:
@@ -362,7 +378,10 @@ def main():
     elif index == 4:
         # 分析asset.car里的图片资源
         archive_path, _ = auto_recogonize_archive_file (root_dir)
-        AssetImageAnalysis (archive_path, base_dir)
+        if archive_path is not  None:
+            AssetImageAnalysis (archive_path, base_dir)
+        else:
+            print ("Not found *.xcarchive file , Please check current dir contain *.xcarchive file")
 
     else:
         # 上传ipa
