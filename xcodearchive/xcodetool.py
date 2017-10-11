@@ -10,11 +10,7 @@
 import json
 import os
 import shutil
-import sys
 import datetime
-
-reload(sys)
-
 
 from AssetCarAnalysis import AssetImageAnalysis
 from  pick import pick
@@ -137,24 +133,49 @@ def produce_plistcontent(projectname, plistpath, method):
     :param plistpath:  文件路径
     :return: 
     '''
+    sign_profile = raw_input ('Please input your signprofie for %s' % method).strip ( )
+    while sign_profile.__len__ ( ) == 0:
+        print ("please input again ")
+        sign_profile = raw_input ('Please input your signprofie for %s:' % method).strip ( )
+
+    data = os.popen ("xcodebuild -showBuildSettings")
+    json_data = data.read ( ).splitlines ( )
+    for line in json_data:
+        if line.__contains__ ("PRODUCT_BUNDLE_IDENTIFIER"):
+            bundle_id = line.split ("=") [1].strip (" ")
+            print(line)
+        if line.__contains__ ("DEVELOPMENT_TEAM"):
+            print(line)
+            team_id = line.split ("=") [1].strip (" ")
+
+        if line.__contains__ ("CODE_SIGN_STYLE"):
+            print(line)
+            sign_style = line.split ("=") [1].strip (" ")
+
+        if line.strip (" ").startswith ("CODE_SIGN_IDENTITY"):
+            print(line)
+            sign_identity = line.split ("=") [1].strip (" ")
+
+    print([bundle_id, team_id, sign_style, sign_identity])
+
     plistcontent = """
-        	<?xml version="1.0" encoding="UTF-8"?>
-            <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-            <plist version="1.0">
-            <dict>
-				<key>method</key>
-				<string>%s</string>
-				<key>title</key>
-				<string>%s</string>
-				<key>kind</key>
-				<string>software</string>
-				<key>uploadSymbols</key>
-				<true/>
-				<key>iCloudContainerEnvironment</key>
-				<string>Production</string>
-            </dict>
-            </plist>
-            """ % (method, projectname)
+                            <?xml version="1.0" encoding="UTF-8"?>
+                            <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+                            <plist version="1.0">
+                            <dict>
+                                <key>compileBitcode</key>
+                                <true/>
+                                <key>method</key>
+                                <string>%s</string>
+                                <key>provisioningProfiles</key>
+                                <dict>
+                                    <key>%s</key>
+                                    <string>%s</string>
+                                </dict>
+                                <key>signingCertificate</key>
+                                <string>%s</string>
+                            </dict>
+                            </plist>""" % (method, bundle_id, sign_profile, sign_identity)
 
     with open (plistpath, 'w') as file:
         file.write (plistcontent)
